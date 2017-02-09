@@ -1,0 +1,174 @@
+---
+title: "STA286 Lecture 14"
+author: "Neil Montgomery"
+date: "Last edited: `r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output: 
+  beamer_presentation:
+    keep_tex: TRUE
+    incremental: TRUE
+    df_print: tibble
+    fig_caption: FALSE
+classoption: aspectratio=169
+header-includes:
+- \renewcommand{\le}{\leqslant}
+- \renewcommand{\ge}{\geqslant}
+- \renewcommand\P[1]{P{\left(#1\right)}}
+- \newcommand\F[1]{F_{\tiny{#1}}}
+- \newcommand\f[1]{f_{\tiny{#1}}}
+- \newcommand\p[1]{p_{\tiny{#1}}}
+- \newcommand\M[1]{M_{\tiny{#1}}}
+- \newcommand\V[1]{\text{Var}\!\left(#1\right)}
+- \newcommand\E[1]{E\!\left(#1\right)}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
+options(tibble.width=70)
+```
+
+## the Binomial$(n,p)$ distributions
+
+Model for the number of 1s after $n$ trials of a Bernoulli$(p)$ process.
+
+\pause \textbf{pmf:} $P(X=k) = {n \choose k}p^k(1-p)^{n-k}$ for $k \in \{0,1,\ldots,n\}$
+
+\pause Path to $E(X)$ is easiest through the mgf:
+$$\M{X}(t) = \sum\limits_{k=0}^n e^{tk} {n \choose k}p^kq^{n-k} = \sum\limits_{k=0}^n  {n \choose k}(pe^t)^kq^{n-k} = (q + pe^t)^n$$
+
+\pause \textbf{Theorem:} Let $X$ be the sum of $n$ independent Bernoulli$(p)$ random variables $X_1,\ldots,X_n$. Then $X \sim \text{Binomial}(n,p)$.
+
+\pause Proof:
+$$\M{X_1+\cdots+X_n}(t) = \M{X_1}(t)\cdots\M{X_n}(t) = (q + pe^t)^n$$
+
+## the Binomial$(n,p)$ distributions
+
+So:
+$$E(X) = E(X_1) + \cdots + E(X_n) = np$$
+
+\pause and
+$$\V{X} = \V{X_1} + \cdots + \V{X_n} = np(1-p)$$
+
+$$SD(X) = \sqrt{np(1-p)}$$
+
+## number of Bernoulli trials until the first 1---Geometric($p$)
+
+We've done most of the work on this distribution.
+
+$$p(y) = (1-p)^{y-1}p, \quad y\in\{1,2,3,\ldots\}$$
+
+\pause $$E(Y) = \frac{1}{p}$$
+
+\pause $$\M{Y}(t) = \frac{pe^t}{1-qe^t}$$
+
+\pause Variance is inevitably tedious. $E(Y^2) = \left.\frac{d^2}{dt^2} \M{Y}(t)\right|_{t=0} = \frac{2-p}{p^2}$, resulting in $\V{Y} = \frac{q}{p^2}$
+
+\pause We say $Y \sim \text{Geometric}(p)$, due to the geometric rate of decay in the pmf.
+
+## cdf and the "reliability function" for a Geometric($p$)
+
+The cdf for $Y\sim\text{Geometric}(p)$ comes in handy sometimes. 
+
+$$\F{Y}(y) = \begin{cases}
+0 &: y < 1\\
+1-(1-p)^k &: k \le y < k+1
+\end{cases}$$
+
+\pause The \textit{reliability} or \textit{survival} function of a random variable is defined as 
+$$R(x) = P(X > x) = 1-P(X\le x) = 1-F(x).$$ 
+For $Y$ in this case:
+$$R_{\tiny Y}(y) = \begin{cases}
+1 &: y \le 1\\
+(1-p)^k &: k < y \le k+1
+\end{cases}$$
+
+## the memorylessess of a Geometric$(p)$ distribution
+
+Bernoulli process is the discrete model for what I will (vaguely) refer to as "complete randomness", which will come to embody these (vague) ideas:
+
+* independence (of trials)
+
+* homogeneity ($p$ doesn't change)
+
+* memoryless (information does not increase with number of trials)
+
+\pause The memorylessness of the Bernoulli process can be seen through a property of the Geometric$(p)$ distribution. Suppose $Y\sim\text{Geometric}(p)$.
+
+\begin{align*}
+P(Y > j + k | Y > j) &= \frac{P(Y > j + k, Y > j)}{P(Y > j)}\\
+&= \frac{P(Y > j + k)}{P(Y > j)} = \frac{(1-p)^{j+k}}{(1-p)^j} = (1-p)^k = P(Y > k)
+\end{align*}
+
+## number of Bernoulli trials until the $r^{th}$ 1
+
+Denote by $W$ the number of trials in a Bernoulli$(p)$ process until the $r^{th}$ 1 occurs.
+
+We'll say $W$ has a "Negative Binomial" distribution, or $W \sim \text{NegBin}(r,p).$
+
+\pause e.g. consider $r=4$ and $W=11$. $P(W=11)$ can be derived as follows:
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc}
+Trial outcomes & Probability\\
+\onslide<3->{1 1 0 0 0 0 0 1 0 0 1 & $(1-p)^7p^3p$}\\
+\onslide<4->{1 0 1 0 0 1 0 0 0 0 1 & $(1-p)^7p^3p$}\\
+\onslide<5->{ \vdots & \vdots}\\
+\end{tabular}
+\end{table}
+
+\pause \pause \pause It will always be 3 1s out of 10 trials, follow by a 1. So the probability is:
+$$P(W = 11) = {11 - 1 \choose 4 - 1} (1-p)^{11-4}p^4$$
+
+\pause In general: $P(W = k) = {k - 1 \choose r - 1} (1-p)^{k-r}p^r, \quad k \in\{r, r+1, r+2, \ldots\}$
+
+## NegBin$(r,p)$
+
+The name comes from this version of the Binomial theorem with negative exponent:
+$$(1-a)^{-r} = \sum\limits_{k=r}^\infty {k-1 \choose r-1}a^{k-r}$$
+which can be used to verify that the pmf is legit.
+
+\pause Next up---mgf.
+\begin{align*}
+\M{W}(t) &= \sum\limits_{k=r}^\infty e^{tk} {k-1 \choose r-1} (1-p)^{k-r}p^r\\
+\onslide<3->{&= (pe^t)^r \sum\limits_{k=r}^\infty {k-1 \choose r-1} (qe^t)^{k-r}\\
+&= \left(\frac{pe^t}{1 - qe^t}\right)^r}   
+\end{align*}
+
+## NegBin$(r,p)$
+
+\textbf{Theorem:} Let $W$ be the sum of $r$ independent random variables $Y_1,\ldots,Y_r$ with Geometric$(p)$ distributions. Then $W\sim\text{NegBin}(r,p)$.
+
+Proof: $\M{Y_1+\cdots+Y_r}(t) = \M{Y_1}(t)\cdots\M{Y_r}(t) = \left(\frac{pe^t}{1 - qe^t}\right)^r$
+
+\pause So:
+$$E(W) = E(Y_1) + \cdots + E(Y_r) = \frac{r}{p}$$
+
+\pause and
+$$\V{W} = \V{Y_1} + \cdots + \V{Y_r} = \frac{rq}{p^2}$$
+
+## the hypergeometric distributions
+
+Reminder: ${n \choose k} = \frac{n!}{k!(n-k)!}$ is the number of ways to choose $k$ items out of $n$, without replcement.
+
+\pause Quality control methods often deal with this sort of situation:
+
+100 items are produced in which 5 are defective. A sample of 10 is selected. Denote by $X$ the number of defective items out of the 10 selected. 
+
+\pause $X$ could take on integer values between 0 and 5 inclusive, with probabilities:
+$$P(X=x) = \frac{{5 \choose x}{95 \choose 10 - x}}{{100 \choose 10}} = 
+\frac{{k \choose x}{N-k \choose n - x}}{{N \choose n}}$$
+$N$ is the population size. $n$ is the sample size. $k$ is the number of "defective" (in this example.)
+
+and we say $X$ has a Hypergeometric distribution with parameters $N$, $n$, and $k$. 
+
+## the hypergeometric distributions
+
+I'm not sure where the name comes from. There is no natural relationship to the Bernoulli process, but there is a tangential one...
+
+\pause Hypergeometric is a "sampling without replacement" version of the Binomial. If $N$ and $n$ are both large, it turns out:
+$$\frac{{k \choose x}{N-k \choose n - x}}{{N \choose n}} \approx {n \choose x} \left(\frac{k}{N}\right)^x\left(1 - \frac{k}{N}\right)^{n-x}$$
+
+\pause All calculations involving these distributions are tedious. It can be shown (no easy way):
+
+$$E(X) = n\frac{k}{N} \qquad \V{X} = n\frac{k}{N}\left(1-\frac{k}{N}\right)\left(\frac{N-n}{N-1}\right)$$
+
