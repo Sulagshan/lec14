@@ -75,10 +75,13 @@ $$\F{Y}(y) = \begin{cases}
 
 \pause The \textit{reliability} or \textit{survival} function of a random variable is defined as 
 $$R(x) = P(X > x) = 1-P(X\le x) = 1-F(x).$$ 
-For $Y$ in this case:
+
+(In class I said "left continuous"; in fact it is right continuous.)
+
+For $Y$ in this case (corrected from class):
 $$R_{\tiny Y}(y) = \begin{cases}
-1 &: y \le 1\\
-(1-p)^k &: k < y \le k+1
+1 &: y < 1\\
+(1-p)^k &: k \le y < k+1
 \end{cases}$$
 
 ## the memorylessess of a Geometric$(p)$ distribution
